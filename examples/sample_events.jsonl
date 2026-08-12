@@ -1,0 +1,9 @@
+{"event_type": "login_success", "actor": {"id": "u-alice", "ip": "203.0.113.10"}, "resource": "webapp"}
+{"event_type": "login_failed", "actor": {"id": "u-bob", "ip": "198.51.100.44"}, "resource": "webapp"}
+{"event_type": "role_changed", "category": "auth", "actor": {"id": "u-alice", "ip": "203.0.113.10"}, "metadata": {"new_role": "admin", "changed_by": "u-carol"}}
+{"event_type": "data_export", "category": "activity", "actor": {"id": "u-alice", "ip": "203.0.113.10"}, "resource": "customers", "metadata": {"record_count": 8400}}
+{"event_type": "record_viewed", "category": "activity", "actor": {"id": "u-dave", "ip": "203.0.113.99"}, "resource": "prod-db/payroll/employee-4471"}
+{"event_type": "security_group_modified", "category": "infra", "actor": {"id": "svc-deploy-bot"}, "resource": "sg-0a1b2c3d", "metadata": {"rule_added": "0.0.0.0/0:22"}}
+{"event_type": "admin_account_created", "category": "infra", "actor": {"id": "u-carol", "ip": "203.0.113.55"}, "resource": "iam", "metadata": {"new_account": "svc-backup-admin"}}
+{"event_type": "logging_disabled", "category": "infra", "actor": {"id": "u-mallory", "ip": "198.51.100.7"}, "resource": "cloudtrail-main"}
+{"event_type": "page_view", "actor": {"id": "u-alice", "ip": "203.0.113.10"}, "resource": "/dashboard"}

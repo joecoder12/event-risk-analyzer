@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "event-risk-analyzer"
+version = "0.1.0"
+description = "Ingests application events, scores them for security risk, and distributes flagged events via a feed API and signed webhooks"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "joecoder12" }]
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "pydantic>=2.6",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+event-risk-analyzer = "event_risk_analyzer.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
