@@ -8,11 +8,28 @@ before this is exposed beyond localhost.
 from __future__ import annotations
 
 import os
+import secrets
 from dataclasses import dataclass, field
+
+# The dev defaults below are published in this repository, so they must never
+# be live on a deployment. Vercel sets VERCEL=1 in every build and function.
+_DEPLOYED = bool(os.environ.get("VERCEL"))
 
 
 def _split_csv(value: str) -> list[str]:
     return [v.strip() for v in value.split(",") if v.strip()]
+
+
+def _default_api_keys() -> list[str]:
+    # Deployed without RISKLENS_API_KEYS: accept no key at all (every request
+    # gets 401) rather than the public dev key.
+    return [] if _DEPLOYED else ["dev-local-key"]
+
+
+def _default_webhook_secret() -> str:
+    # Deployed without RISKLENS_WEBHOOK_SECRET: sign with a random per-process
+    # secret instead of the public dev one.
+    return secrets.token_hex(32) if _DEPLOYED else "dev-webhook-secret"
 
 
 @dataclass(frozen=True)
@@ -22,13 +39,15 @@ class Settings:
 
     # Auth — callers must send `X-API-Key` matching one of these.
     api_keys: list[str] = field(
-        default_factory=lambda: _split_csv(
-            os.environ.get("RISKLENS_API_KEYS", "dev-local-key")
-        )
+        default_factory=lambda: _split_csv(keys)
+        if (keys := os.environ.get("RISKLENS_API_KEYS")) is not None
+        else _default_api_keys()
     )
 
     # Outbound webhook signing secret (HMAC-SHA256 over the raw request body).
-    webhook_secret: str = os.environ.get("RISKLENS_WEBHOOK_SECRET", "dev-webhook-secret")
+    webhook_secret: str = (
+        os.environ.get("RISKLENS_WEBHOOK_SECRET") or _default_webhook_secret()
+    )
     webhook_timeout_seconds: float = float(os.environ.get("RISKLENS_WEBHOOK_TIMEOUT", "5"))
 
     # Severity thresholds (0-100 risk score -> bucket)
