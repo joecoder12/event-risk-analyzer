@@ -8,12 +8,20 @@ from __future__ import annotations
 
 import hmac
 
-from fastapi import Header, HTTPException, status
+from typing import Optional
+
+from fastapi import HTTPException, Security, status
+from fastapi.security import APIKeyHeader
 
 from event_risk_analyzer.config import settings
 
+# Declared as a security scheme (not a plain header) so the /docs page shows a
+# single "Authorize" button instead of a key field on every endpoint.
+_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
-def require_api_key(x_api_key: str = Header(default="")) -> str:
+
+def require_api_key(x_api_key: Optional[str] = Security(_api_key_header)) -> str:
+    x_api_key = x_api_key or ""
     for candidate in settings.api_keys:
         if hmac.compare_digest(x_api_key, candidate):
             return x_api_key
