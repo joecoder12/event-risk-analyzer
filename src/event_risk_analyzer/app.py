@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from typing import Iterator, Optional
 
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 
 from event_risk_analyzer.auth import require_api_key
 from event_risk_analyzer.db import get_db, init_db
@@ -47,6 +48,12 @@ def get_conn() -> Iterator[sqlite3.Connection]:
 async def _dispatch_task(scored_event_id: str, severity: str, feed_item: dict) -> None:
     with get_db() as conn:
         await dispatch_webhooks(conn, scored_event_id, severity, feed_item)
+
+
+@app.get("/", include_in_schema=False)
+def root() -> RedirectResponse:
+    # The service has no UI of its own; send visitors to the interactive docs.
+    return RedirectResponse(url="/docs")
 
 
 @app.get("/health")

@@ -81,3 +81,12 @@ def test_subscriber_crud(temp_db):
 
         missing = client.delete(f"/subscribers/{sub_id}", headers=HEADERS)
         assert missing.status_code == 404
+
+
+def test_root_redirects_to_the_interactive_docs(temp_db):
+    from event_risk_analyzer.app import app
+
+    with TestClient(app) as client:
+        resp = client.get("/", follow_redirects=False)
+        assert resp.status_code == 307
+        assert resp.headers["location"] == "/docs"
